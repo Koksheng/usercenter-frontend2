@@ -27,7 +27,8 @@ request.interceptors.request.use((url,options): any=> {
  */
  request.interceptors.response.use(async (response, options): Promise<any> => {
     const res = await response.clone().json();
-    console.log(res);
+    console.log(`all response`);
+    console.log(JSON.stringify(res, null, 2));
     if(res.code === 0){
         return res.data
     }

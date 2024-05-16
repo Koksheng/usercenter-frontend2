@@ -1,4 +1,4 @@
-import { searchUsers } from '@/services/ant-design-pro/api';
+import { deleteUser, searchUsers } from '@/services/ant-design-pro/api';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Image } from 'antd';
@@ -15,6 +15,10 @@ export const waitTimePromise = async (time: number = 100) => {
 
 export const waitTime = async (time: number = 100) => {
   await waitTimePromise(time);
+};
+
+const deleteItem = async (userId: number) => {
+  return await deleteUser(userId); // Pass the userId as an option to the deleteUser function
 };
 
 const columns: ProColumns<API.CurrentUser>[] = [
@@ -145,7 +149,20 @@ const columns: ProColumns<API.CurrentUser>[] = [
       </a>,
       <TableDropdown
         key="actionGroup"
-        onSelect={() => action?.reload()}
+        onSelect={async (key) => {
+          if (key === 'delete') {
+            var res = await deleteItem(record.id);
+            //@ts-ignore
+            if(res === 1){
+              action?.reload(); // Refresh the table
+            } else {
+              console.error('Failed to delete item');
+            }
+              
+          } else {
+            action?.reload();
+          }
+        }}
         menus={[
           { key: 'copy', name: '复制' },
           { key: 'delete', name: '删除' },
