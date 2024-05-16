@@ -13,7 +13,8 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 /** 退出登录接口 POST /api/user/userLogout */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<API.BaseResponse<number>>('/api/user/userLogout', {
+  // return request<API.BaseResponse<number>>('/api/user/userLogout', {
+  return request<API.BaseResponse<number>>('/api/authentication/Logout', {
     method: 'POST',
     ...(options || {}),
   });
@@ -21,7 +22,8 @@ export async function outLogin(options?: { [key: string]: any }) {
 
 /** 登录接口 POST /api/user/userLogin */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.BaseResponse<API.LoginResult>>('/api/User/userLogin', {
+  // return request<API.BaseResponse<API.LoginResult>>('/api/User/userLogin', {
+  return request<API.BaseResponse<API.LoginResult>>('/api/authentication/Login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -33,7 +35,8 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 
 /** 注册接口 POST /api/user/userRegister */
 export async function register(body: API.RegisterParams, options?: { [key: string]: any }) {
-  return request<API.BaseResponse<API.RegisterResult>>('/api/User/userRegister', {
+  // return request<API.BaseResponse<API.RegisterResult>>('/api/User/userRegister', {
+  return request<API.BaseResponse<API.RegisterResult>>('/api/authentication/Register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -105,6 +105,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
+      console.log("here login");
       const res = await login({
         ...values,
         // type,
