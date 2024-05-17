@@ -56,6 +56,19 @@ export async function searchUsers(options?: { [key: string]: any }) {
   });
 }
 
+/** 注册接口 POST /api/user/userRegister */
+export async function updateUser(body: API.CurrentUser, options?: { [key: string]: any }) {
+  // return request<API.BaseResponse<API.RegisterResult>>('/api/User/userRegister', {
+  return request<API.BaseResponse<number>>('/api/user/updateUser', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 删除用户 POST /api/user/deleteUser */
 export async function deleteUser(id: number) {
   return request<API.BaseResponse<number>>(`/api/user/deleteUser?id=${id}`, {

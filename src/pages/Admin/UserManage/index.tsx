@@ -1,4 +1,4 @@
-import { deleteUser, searchUsers } from '@/services/ant-design-pro/api';
+import { deleteUser, searchUsers, updateUser } from '@/services/ant-design-pro/api';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Image } from 'antd';
@@ -174,6 +174,38 @@ const columns: ProColumns<API.CurrentUser>[] = [
 
 export default () => {
   const actionRef = useRef<ActionType>();
+
+  const handleEditSubmit = async (values: API.CurrentUser) => {
+    try {
+      // 注册
+      var res = await updateUser({
+        ...values,
+        // type,
+      });
+      // // if (res.code===0 && res.data > 0) {
+      // if (id) {
+      //   const defaultLoginSuccessMessage = '注册成功！';
+      //   message.success(defaultLoginSuccessMessage);
+      //   const urlParams = new URL(window.location.href).searchParams;
+      //   history.push(urlParams.get('redirect') || '/');
+      //   // if(!history) return;
+      //   // const {query} = history.location;
+      //   // history.push({
+      //   //   pathname: '/user/login',
+      //   //   query,
+      //   // });
+      //   return;
+      // } 
+      // else {
+      //   // throw new Error(res.description);
+      //   throw new Error("resiter error id");
+      // }
+    } catch (error: any) {
+      const defaultLoginFailureMessage = '注册失败，请重试！';
+      // message.error(defaultLoginFailureMessage);
+    }
+  };
+
   return (
     <ProTable<API.CurrentUser>
       columns={columns}
@@ -193,6 +225,17 @@ export default () => {
       }}
       editable={{
         type: 'multiple',
+        // onValuesChange: handleValuesChange,
+        onSave: async (rowKey, data, row) => {
+          console.log("rowKey",rowKey);
+          console.log("data", data);
+          console.log("row", row);
+          await handleEditSubmit(data as API.CurrentUser);
+          // onFinish={async (values) => {
+          //   await handleSubmit(values as API.RegisterParams);
+          // }}
+          // await waitTime(2000);
+        },
       }}
       columnsState={{
         persistenceKey: 'pro-table-singe-demos',
