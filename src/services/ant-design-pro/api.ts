@@ -47,12 +47,26 @@ export async function register(body: API.RegisterParams, options?: { [key: strin
 }
 
 /** 搜索用户 GET /api/user/searchUsers/ */
-export async function searchUsers(options?: { [key: string]: any }) {
-  return request<API.BaseResponse<API.CurrentUser>>('/api/user/searchUsers', {
+// export async function searchUsers(options?: { [key: string]: any }) {
+//   return request<API.BaseResponse<API.CurrentUser>>('/api/user/searchUsers', {
+//     method: 'GET',
+//     ...(options || {}),
+//     // data: body,
+//     // ...(options || {}),
+//   });
+// }
+
+export async function searchUsers(params: Record<string, any>, options?: { [key: string]: any }) {
+  
+  // console.log("before",params.userRole);
+  // // if (params.userRole !== undefined) {
+  // //   params.userRole = params.userRole == true ? 1 : 2;
+  // // }
+  // console.log("after",params.userRole);
+  return request<API.BaseResponse<API.CurrentUser>>('/api/user/searchUserList', {
     method: 'GET',
+    params,
     ...(options || {}),
-    // data: body,
-    // ...(options || {}),
   });
 }
 

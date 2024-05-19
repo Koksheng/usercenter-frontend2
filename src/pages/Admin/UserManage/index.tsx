@@ -2,7 +2,8 @@ import { deleteUser, searchUsers, updateUser } from '@/services/ant-design-pro/a
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Image } from 'antd';
-import { ReactNode, useRef } from 'react';
+import { ReactNode, useRef, useState } from 'react';
+import { message } from 'antd';
 // import CurrentUser = API.CurrentUser;
 
 export const waitTimePromise = async (time: number = 100) => {
@@ -49,6 +50,18 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '性别',
     dataIndex: 'gender',
+    valueType: 'select',
+    valueEnum: {
+      2: { text: 'Female', status: 'Error' },
+      1: {
+        text: 'Male',
+        status: 'Success',
+      },
+      0: {
+        text: 'ALL',
+        status: 'Default',
+      },
+    },
   },
   {
     title: '电话',
@@ -63,6 +76,18 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '状态',
     dataIndex: 'userStatus',
+    valueType: 'select',
+    valueEnum: {
+      2: { text: 'Inactive', status: 'Error' },
+      1: {
+        text: 'Active',
+        status: 'Success',
+      },
+      0: {
+        text: 'ALL',
+        status: 'Default',
+      },
+    },
   },
   {
     title: '星球编号',
@@ -74,10 +99,14 @@ const columns: ProColumns<API.CurrentUser>[] = [
     dataIndex: 'userRole', // userRole == isAdmin
     valueType: 'select',
     valueEnum: {
-      false: { text: 'User', status: 'Default' },
-      true: {
+      2: { text: 'User', status: 'Warning' },
+      1: {
         text: 'Admin',
         status: 'Success',
+      },
+      0: {
+        text: 'ALL',
+        status: 'Default',
       },
     },
   },
@@ -86,51 +115,6 @@ const columns: ProColumns<API.CurrentUser>[] = [
     dataIndex: 'createTime',
     valueType: 'dateTime',
   },
-
-  // {
-  //   disable: true,
-  //   title: '状态',
-  //   dataIndex: 'state',
-  //   filters: true,
-  //   onFilter: true,
-  //   ellipsis: true,
-  //   valueType: 'select',
-  //   valueEnum: {
-  //     all: { text: '超长'.repeat(50) },
-  //     open: {
-  //       text: '未解决',
-  //       status: 'Error',
-  //     },
-  //     closed: {
-  //       text: '已解决',
-  //       status: 'Success',
-  //       disabled: true,
-  //     },
-  //     processing: {
-  //       text: '解决中',
-  //       status: 'Processing',
-  //     },
-  //   },
-  // },
-  // {
-  //   disable: true,
-  //   title: '标签',
-  //   dataIndex: 'labels',
-  //   search: false,
-  //   renderFormItem: (_, { defaultRender }) => {
-  //     return defaultRender(_);
-  //   },
-  //   render: (_, record) => (
-  //     <Space>
-  //       {record.labels.map(({ name, color }) => (
-  //         <Tag color={color} key={name}>
-  //           {name}
-  //         </Tag>
-  //       ))}
-  //     </Space>
-  //   ),
-  // },
-
   {
     title: '操作',
     valueType: 'option',
@@ -138,36 +122,37 @@ const columns: ProColumns<API.CurrentUser>[] = [
     render: (text, record, _, action) => [
       <a
         key="editable"
-        onClick={() => {
+        onClick={async () => {
           action?.startEditable?.(record.id);
         }}
       >
         编辑
       </a>,
-      <a href={record.avatarUrl} target="_blank" rel="noopener noreferrer" key="view">
-        查看
-      </a>,
-      <TableDropdown
-        key="actionGroup"
-        onSelect={async (key) => {
-          if (key === 'delete') {
-            var res = await deleteItem(record.id);
-            //@ts-ignore
-            if(res === 1){
-              action?.reload(); // Refresh the table
-            } else {
-              console.error('Failed to delete item');
-            }
+      // <a href={record.avatarUrl} target="_blank" rel="noopener noreferrer" key="view">
+      //   查看
+      // </a>,
+      // <TableDropdown
+      //   key="actionGroup"
+      //   onSelect={async (key) => {
+      //     if (key === 'delete') {
+      //       var res = await deleteItem(record.id);
+      //       //@ts-ignore
+      //       if(res === 1){
+      //         action?.reload(); // Refresh the table
+      //         message.success('delete 成功');
+      //       } else {
+      //         console.error('Failed to delete item');
+      //       }
               
-          } else {
-            action?.reload();
-          }
-        }}
-        menus={[
-          { key: 'copy', name: '复制' },
-          { key: 'delete', name: '删除' },
-        ]}
-      />,
+      //     } else {
+      //       action?.reload();
+      //     }
+      //   }}
+      //   menus={[
+      //     { key: 'copy', name: '复制' },
+      //     { key: 'delete', name: '删除' },
+      //   ]}
+      // />,
     ],
   },
 ];
@@ -175,34 +160,28 @@ const columns: ProColumns<API.CurrentUser>[] = [
 export default () => {
   const actionRef = useRef<ActionType>();
 
+  // actionRef.current? 的一些 action
+  // interface ActionType {
+  //   reload: (resetPageIndex?: boolean) => void;
+  //   reloadAndRest: () => void;
+  //   reset: () => void;
+  //   clearSelected?: () => void;
+  //   startEditable: (rowKey: Key) => boolean;
+  //   cancelEditable: (rowKey: Key) => boolean;
+  // }
+
   const handleEditSubmit = async (values: API.CurrentUser) => {
     try {
-      // 注册
+      // update
       var res = await updateUser({
         ...values,
-        // type,
       });
-      // // if (res.code===0 && res.data > 0) {
-      // if (id) {
-      //   const defaultLoginSuccessMessage = '注册成功！';
-      //   message.success(defaultLoginSuccessMessage);
-      //   const urlParams = new URL(window.location.href).searchParams;
-      //   history.push(urlParams.get('redirect') || '/');
-      //   // if(!history) return;
-      //   // const {query} = history.location;
-      //   // history.push({
-      //   //   pathname: '/user/login',
-      //   //   query,
-      //   // });
-      //   return;
-      // } 
-      // else {
-      //   // throw new Error(res.description);
-      //   throw new Error("resiter error id");
-      // }
+      message.success('update 成功');
     } catch (error: any) {
-      const defaultLoginFailureMessage = '注册失败，请重试！';
-      // message.error(defaultLoginFailureMessage);
+      const defaultLoginFailureMessage = 'update失败，请重试！';
+      message.error(defaultLoginFailureMessage);
+      // Relaod the table
+      actionRef.current?.reload();
     }
   };
 
@@ -213,10 +192,16 @@ export default () => {
       cardBordered
       //@ts-ignore
       request={async (params, sort, filter) => {
-        console.log(sort, filter);
-        await waitTime(2000);
+        console.log("params", params);
+        console.log("sort", sort);
+        console.log("filter", filter);
+        // await waitTime(2000);
 
-        const userList = await searchUsers();
+        const userList = await searchUsers({
+          ...params,
+          sort,
+          filter,
+        });
         return {
           //@ts-ignore
           // data: userList.data,
@@ -228,13 +213,22 @@ export default () => {
         // onValuesChange: handleValuesChange,
         onSave: async (rowKey, data, row) => {
           console.log("rowKey",rowKey);
-          console.log("data", data);
-          console.log("row", row);
+          // console.log("data", data);
+          // console.log("row", row);
           await handleEditSubmit(data as API.CurrentUser);
-          // onFinish={async (values) => {
-          //   await handleSubmit(values as API.RegisterParams);
-          // }}
-          // await waitTime(2000);
+        },
+        onDelete: async (rowKey, row) => {
+          // console.log("rowKey",rowKey);
+          // console.log("row", row);
+          // console.log("row.id", row.id);
+          var res = await deleteItem(row.id);
+          //@ts-ignore
+          if(res === 1){
+            // actionRef?.reload(); // Refresh the table
+            message.success('delete 成功');
+          } else {
+            console.error('Failed to delete item');
+          }
         },
       }}
       columnsState={{
